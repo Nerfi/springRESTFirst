@@ -25,6 +25,9 @@ import org.springframework.http.HttpMethod;
 
 
 // This will start our Spring Boot application and make it available for our test to perform requests to it.
+
+// comentario de prueba
+
 @SpringBootTest(webEnvironment =  SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CashcardApplicationTests {
