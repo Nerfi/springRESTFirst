@@ -35,9 +35,12 @@ public class SecurityConfig {
      SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
          http
                  .authorizeHttpRequests(request -> request
-                         .requestMatchers("/cashcards/**")
+                         .requestMatchers("/cashcards/**", "/tutorials/**")
+
+
                          .hasRole("CARD-OWNER")
                  )
+
                  .csrf(csfr -> csfr.disable())
                  .httpBasic(Customizer.withDefaults());
 // PD: si nuestra app va a ser llamada por un cliente(Browser)
