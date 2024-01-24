@@ -27,6 +27,10 @@ dependencies {
 
 	// mysql test
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	//runtimeOnly 'mysql:mysql-connector-java'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+
 
 }
 
@@ -49,6 +53,6 @@ test {
 		showStackTraces true
 
 		// Change to `true` for more verbose test output
-		showStandardStreams = false
+		showStandardStreams = true
 	}
 }

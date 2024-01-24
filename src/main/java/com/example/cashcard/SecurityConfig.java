@@ -62,12 +62,12 @@ public class SecurityConfig {
     // esto es para configurar el usuario in memory que vamos a usar con las request(por lo cual ya no nos pide que nos logueemos la app)
      // comentar el codigo de abajo para enterder el comentario de arriba
 
-    @Bean
+   @Bean
     UserDetailsService testOnlyUsers(PasswordEncoder passwordEncoder) {
         // construimos un usuario
         User.UserBuilder users = User.builder();
 
-        UserDetails sarah = users.username("sarah1").password(passwordEncoder.encode("abc123"))
+       UserDetails sarah = users.username("sarah1").password(passwordEncoder.encode("abc123"))
                 .roles("CARD-OWNER")
                 .build();
 

@@ -19,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 // para implemetar PUT updates
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.test.context.ActiveProfiles;
 
 // NOTA MENTAL: Si vemos que tenemos un 403 en alguno de nuestros test y tenemos enabled
 // spring security dicho 403 es spring security defaults in action!!!
@@ -29,6 +30,7 @@ import org.springframework.http.HttpMethod;
 // comentario de prueba
 
 @SpringBootTest(webEnvironment =  SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@ActiveProfiles("test")
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CashcardApplicationTests {
 	@Autowired

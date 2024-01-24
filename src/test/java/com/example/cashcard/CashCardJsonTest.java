@@ -8,12 +8,14 @@ import org.springframework.boot.test.json.JacksonTester;
 
 import java.io.IOException;
 import org.assertj.core.util.Arrays;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // nos hemos quedado por aqui https://spring.academy/courses/building-a-rest-api-with-spring-boot/lessons/get-list-lab/lab
 
 @JsonTest
+///@ActiveProfiles("test")
 class CashCardJsonTest {
 
     @Autowired
