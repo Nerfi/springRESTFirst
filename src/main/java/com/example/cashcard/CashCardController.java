@@ -104,11 +104,12 @@ public class CashCardController {
 
         if(cashCardRepository.existsByIdAndOwner(id, principal.getName())) {
             cashCardRepository.deleteById(id);
+            // no content es lo mismo que 204, ver HTTP status para mejor idea
             return ResponseEntity.noContent().build();
 
         }
 
-        // no content es lo mismo que 204, ver HTTP status para mejor idea
+
         return  ResponseEntity.notFound().build();
     }
 

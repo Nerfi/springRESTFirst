@@ -18,7 +18,7 @@ public interface CashCardRepository extends  CrudRepository<CashCard, Long>, Pag
 
      boolean existsByIdAndOwner(Long id, String owner);
 
-    // en los dos metodos de arriab spring data es la que se encargara de
+    // en los dos metodos de arriba spring data es la que se encargara de
     // la implementacion de las querysSQL para los metodos que hemos definido
     // docs para escribir nuestra propias querys
     // https://docs.spring.io/spring-data/relational/reference/repositories/query-methods-details.html
