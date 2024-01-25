@@ -1,15 +1,11 @@
 package com.example.cashcard.tutorials;
 
-
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.http.ResponseEntity;
 
-import java.security.Principal;
-import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/tutorials")
@@ -33,6 +29,19 @@ public class TutorialsController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(tut);
+    }
+
+    @GetMapping("/{requestedId}")
+    private ResponseEntity<Optional<Tutorials>> findById(@PathVariable Long requestedId) {
+            // el nombre Tutorials esta mal pero bueno, es solo para pruebas
+        Optional<Tutorials> singleTutorial = tutorialsRepository.findById(requestedId);
+
+        //check in case there is not tutorial
+        if(singleTutorial.isPresent()) {
+            return ResponseEntity.ok(singleTutorial);
+        }
+    // returnign 404 htt status code
+        return ResponseEntity.notFound().build();
     }
 
 }
