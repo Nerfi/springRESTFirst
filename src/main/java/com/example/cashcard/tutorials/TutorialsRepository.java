@@ -15,7 +15,7 @@ public interface TutorialsRepository extends CrudRepository<Tutorials, Long> {
     //method to find by title
     List<Tutorials> findByTitleContains(String title);
 
-     // por esta razon hemos cambiado Like por Contains: https://www.baeldung.com/spring-jpa-like-queries
+     // por esta razon hemos cambiado "Like" por "Contains": https://www.baeldung.com/spring-jpa-like-queries
 
 
 }
