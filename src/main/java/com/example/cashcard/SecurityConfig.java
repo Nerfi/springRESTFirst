@@ -35,10 +35,12 @@ public class SecurityConfig {
      SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
          http
                  .authorizeHttpRequests(request -> request
-                         .requestMatchers("/cashcards/**", "/tutorials/**")
+                         // not sure why its not working
+                         //  .requestMatchers("/").permitAll()
+                         //.requestMatchers("/").permitAll()
+                         .requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
 
 
-                         .hasRole("CARD-OWNER")
                  )
 
                  .csrf(csfr -> csfr.disable())
