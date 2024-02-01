@@ -1,10 +1,18 @@
 package com.example.cashcard;
 
+import com.example.cashcard.Users.security.jwt.AuthEntryPointJwt;
+import com.example.cashcard.Users.security.jwt.AuthTokenFilter;
+import com.example.cashcard.Users.security.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +20,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+
+
+
 
 /* TODO ESTE ARCHIVO PERTENECE A LA SEGURIDAD DE SPRING Y DEL TUTORIAL */
 // https://spring.academy/courses/building-a-rest-api-with-spring-boot/lessons/simple-spring-security-lab/lab
@@ -25,38 +38,88 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  */
 @Configuration
 public class SecurityConfig {
+     @Autowired
+     UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    //esta es una clase que se ha creado, por eso da error
+    private AuthEntryPointJwt unauthorizedHandler;
+
 
     /*
     Spring Security expects a Bean to configure its Filter Chain,
      which you learned about in the Simple Spring Security lesson.
      Annotating a method returning a SecurityFilterChain with the @Bean satisfies this expectation.
     * */
+//     @Bean
+//     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//         http
+//                 .authorizeHttpRequests(request -> request
+//                         // not sure why its not working
+//                         //  .requestMatchers("/").permitAll()
+//                         //.requestMatchers("/").permitAll()
+//
+//                         .requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
+//
+//
+//                 )
+//                 //.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+//                 //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//
+//                 .csrf(csfr -> csfr.disable())
+//                 .httpBasic(Customizer.withDefaults());
+//// PD: si nuestra app va a ser llamada por un cliente(Browser)
+//         // no es conveniente descativar csrf, mirarlo despues
+//
+//
+//         return http.build();
+//     }
+
+
      @Bean
-     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-         http
-                 .authorizeHttpRequests(request -> request
-                         // not sure why its not working
-                         //  .requestMatchers("/").permitAll()
-                         //.requestMatchers("/").permitAll()
-                         .requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
-
-
-                 )
-
-                 .csrf(csfr -> csfr.disable())
-                 .httpBasic(Customizer.withDefaults());
-// PD: si nuestra app va a ser llamada por un cliente(Browser)
-         // no es conveniente descativar csrf, mirarlo despues
-
-
-         return http.build();
+     public AuthTokenFilter authenticationJwtTokenFilter() {
+         // clase creada por separado
+         return new AuthTokenFilter();
      }
 
-    // hacemos esto para evitar la seguridad en la bbdd por el momento
+     @Bean
+     public DaoAuthenticationProvider authenticationProvider() {
+         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+         authProvider.setUserDetailsService(userDetailsService);
+         authProvider.setPasswordEncoder(passwordEncoder());
+
+         return authProvider;
+     }
+
+     @Bean
+     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+         return authConfig.getAuthenticationManager();
+     }
+     // new security chain from tutorial
+     @Bean
+     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+         http.csrf(csrf -> csrf.disable())
+                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                 .authorizeHttpRequests(auth ->
+                         auth.requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
+                                 .anyRequest().authenticated()
+                 );
+
+         http.authenticationProvider(authenticationProvider());
+         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+         return http.build();
+
+     }
+
+     // hacemos esto para evitar la seguridad en la bbdd por el momento
      // y para continuar con las pruebas y el tutorial
       @Bean
       public WebSecurityCustomizer webSecurityCustomizer() {
-          return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+          return (web) -> web.ignoring().requestMatchers("/js/**", "/images/**");
+
+//          return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
       }
 
     @Bean
