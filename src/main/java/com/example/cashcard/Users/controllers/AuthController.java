@@ -6,9 +6,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.example.cashcard.Users.Login.Payload.LoginRequest;
+import com.example.cashcard.Users.Login.Payload.MessageResponse;
+import com.example.cashcard.Users.Login.Payload.SignupRequest;
 import com.example.cashcard.Users.Login.Payload.UserInfoResponse;
 import com.example.cashcard.Users.Repositories.RoleRepository;
 import com.example.cashcard.Users.Repositories.UserRepository;
+import com.example.cashcard.Users.Role;
+import com.example.cashcard.Users.User;
 import com.example.cashcard.Users.security.jwt.JwtUtils;
 import com.example.cashcard.Users.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -42,7 +46,7 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
-    private ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
@@ -55,8 +59,59 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .toList(); // sugerido por IDE
-        return  ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse())
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(new UserInfoResponse(
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        roles
+                ));
+    }
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest){
+        if (userRepository.existsByUsername(signupRequest.getUsername())) {
+            return ResponseEntity.badRequest().body(
+                    new MessageResponse("Error: username already exists")
+            );
+        }
+
+        if(userRepository.existsByEmail(signupRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse(("Error: Email already taken")));
+        }
+
+        // create new user account
+
+        User user = new User(null, signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
+        Set<String> strRoles = signupRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if(strRoles == null) {
+            //revisar este codigo en caso de error con el role designado al usuario
+            Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } strRoles.forEach(role -> {
+            switch (role) {
+                case "admin":
+                    Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
+
+                    break;
+                case "mod":
+                    Role modRole = roleRepository.findByName("ROLE_MODERATOR")
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(modRole);
+
+                    break;
+                default:
+                    Role userRole = roleRepository.findByName("ROLE_USER")
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+            }
+
+            //   user.setRoles(roles);
+
+        return null;
     }
 
 
