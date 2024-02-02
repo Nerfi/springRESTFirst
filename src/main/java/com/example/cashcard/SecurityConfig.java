@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,6 +38,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  this class will now be available to Spring's Auto Configuration engine.
  */
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
      @Autowired
      UserDetailsServiceImpl userDetailsService;
@@ -102,7 +104,14 @@ public class SecurityConfig {
                  .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authorizeHttpRequests(auth ->
-                         auth.requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
+                         //old set up , once this is working make the old
+                         //set up work
+//                         auth.requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
+//                                 .anyRequest().authenticated()
+
+                         auth.requestMatchers("/api/auth/**").permitAll()
+                                 .requestMatchers("/api/test/**").permitAll()
+                                 .requestMatchers("/cashcards/**", "/tutorials/**").hasRole("CARD-OWNER")
                                  .anyRequest().authenticated()
                  );
 

@@ -3,7 +3,7 @@ package com.example.cashcard.Users.controllers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 import com.example.cashcard.Users.Login.Payload.LoginRequest;
 import com.example.cashcard.Users.Login.Payload.MessageResponse;
@@ -81,37 +81,50 @@ public class AuthController {
 
         // create new user account
 
-        User user = new User(null, signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
+        User user = new User( signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
+
         Set<String> strRoles = signupRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if(strRoles == null) {
-            //revisar este codigo en caso de error con el role designado al usuario
-            Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } strRoles.forEach(role -> {
-            switch (role) {
-                case "admin":
-                    Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(adminRole);
+     if(strRoles == null) {
+         Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+         roles.add(userRole);
 
-                    break;
-                case "mod":
-                    Role modRole = roleRepository.findByName("ROLE_MODERATOR")
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(modRole);
+     } else {
+         strRoles.forEach(role -> {
+             switch (role) {
+                 case "admin":
+                     Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RuntimeException("Error: role is not found"));
+                     roles.add(adminRole);
 
-                    break;
-                default:
-                    Role userRole = roleRepository.findByName("ROLE_USER")
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(userRole);
-            }
+                     break;
 
-            //   user.setRoles(roles);
+                 case "mod":
+                     Role modRole = roleRepository.findByName("ROLE_MODERATOR")
+                             .orElseThrow(() -> new RuntimeException("Error: role is not found"));
+                     roles.add(modRole);
 
-        return null;
+                     break;
+
+                 default:
+                     Role userRole = roleRepository.findByName("ROLE_USER")
+                             .orElseThrow(() -> new RuntimeException("Error: role is not found"));
+                     roles.add(userRole);
+             }
+         });
+     }
+
+               //user.setRoles(roles); // esto me estan dadno problemas: Unknown column 'user' in 'field list'
+     userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new MessageResponse("You've been signed out!"));
     }
 
 

@@ -22,7 +22,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
-    //@JsonIgnore
+    //@JsonIgnore en caso de error comprobar de nuevo esto
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
@@ -37,17 +37,15 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-
-        List<GrantedAuthority> authorities = user.role().stream()
-
-                .map(role -> new SimpleGrantedAuthority(role.name()))
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
-                user.id(),
-                user.username(),
-                user.email(),
-                user.password(),
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
                 authorities);
     }
 
@@ -55,8 +53,6 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
-
-
 
     public Long getId() {
         return id;
@@ -105,5 +101,4 @@ public class UserDetailsImpl implements UserDetails {
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(id, user.id);
     }
-
 }
