@@ -3,6 +3,7 @@ package com.example.cashcard.Users;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.HashSet;
@@ -35,6 +36,7 @@ public class User {
 
    //@JoinTable( name ="user_role")
 
+    @MappedCollection(idColumn = "ID", keyColumn = "ROLE_ID")
     private Set<Role> roles = new HashSet<>();
 
     public User() {

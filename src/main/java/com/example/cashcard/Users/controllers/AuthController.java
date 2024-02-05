@@ -87,6 +87,9 @@ public class AuthController {
 
         Set<String> strRoles = signupRequest.getRole();
         System.out.println(strRoles +  " los roles deberia ir aqui"); // no los veo
+
+        System.out.println("LOLOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+
         Set<Role> roles = new HashSet<>();
 
      if(strRoles == null) {
