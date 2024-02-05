@@ -19,13 +19,16 @@ public class Role {
 
     //@Enumerated(EnumType.STRING)
    // @Column(length = 20)
-    private String name;
+    // lo he comentado para seguir el tutorial al pie de la letra
+    //private String name;
+
+    private ERole name;
 
     public Role() {
 
     }
 
-    public Role(String name) {
+    public Role(ERole name) {
         this.name = name;
     }
 
@@ -37,11 +40,11 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
+    public ERole getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(ERole name) {
         this.name = name;
     }
 }

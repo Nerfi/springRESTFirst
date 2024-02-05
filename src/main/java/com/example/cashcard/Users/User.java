@@ -17,7 +17,7 @@ import java.util.Set;
 //}
 
 
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     private Long id;
@@ -36,7 +36,7 @@ public class User {
 
    //@JoinTable( name ="user_role")
 
-    @MappedCollection(idColumn = "ID", keyColumn = "ROLE_ID")
+   // @MappedCollection(idColumn = "id", keyColumn = "id")
     private Set<Role> roles = new HashSet<>();
 
     public User() {
