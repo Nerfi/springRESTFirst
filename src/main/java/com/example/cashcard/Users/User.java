@@ -33,7 +33,12 @@ public class User {
     //@Size(max = 120)
     private String password;
 
+   //@JoinTable( name ="user_role")
+
     private Set<Role> roles = new HashSet<>();
+
+    public User() {
+    }
 
     public User(String username, String email, String password) {
         this.username = username;

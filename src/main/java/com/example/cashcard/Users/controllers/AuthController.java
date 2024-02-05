@@ -3,6 +3,7 @@ package com.example.cashcard.Users.controllers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 import com.example.cashcard.Users.Login.Payload.LoginRequest;
@@ -58,7 +59,7 @@ public class AuthController {
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
-                .toList(); // sugerido por IDE
+                .collect(Collectors.toList());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(
                         userDetails.getId(),
@@ -83,7 +84,9 @@ public class AuthController {
 
         User user = new User( signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
 
+
         Set<String> strRoles = signupRequest.getRole();
+        System.out.println(strRoles +  " los roles deberia ir aqui"); // no los veo
         Set<Role> roles = new HashSet<>();
 
      if(strRoles == null) {
@@ -114,8 +117,8 @@ public class AuthController {
          });
      }
 
-               //user.setRoles(roles); // esto me estan dadno problemas: Unknown column 'user' in 'field list'
-     userRepository.save(user);
+        user.setRoles(roles); // esto me estan dadno problemas: Unknown column 'user' in 'field list'
+        userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
