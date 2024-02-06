@@ -36,7 +36,7 @@ public class User {
 
    //@JoinTable( name ="user_role")
 
-   // @MappedCollection(idColumn = "id", keyColumn = "id")
+    @MappedCollection(idColumn = "id")
     private Set<Role> roles = new HashSet<>();
 
     public User() {
